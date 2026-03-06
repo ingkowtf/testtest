@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <script
+      type="module"
+      src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
+    ></script>
+
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        font-family: Arial;
+        background: black;
+      }
+
+      #linkbutton {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: white;
+        border-radius: 14px;
+        padding: 12px 18px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        z-index: 10;
+      }
+
+      #linktext {
+        font-size: 14px;
+        line-height: 1.3;
+      }
+
+      #linkurl {
+        color: #666;
+        font-size: 12px;
+      }
+
+      #gotext {
+        background: black;
+        color: white;
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+      }
+
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <!--เสียง -->
+    <audio id="sound" src="mixkit-arcade-retro-game-over-213.wav"></audio>
+
+    <model-viewer
+      id="viewer"
+      src="greencurry.glb"
+      ar
+      ar-modes="scene-viewer quick-look webxr"
+      camera-controls
+      auto-rotate
+      style="width: 100vw; height: 100vh"
+    >
+    </model-viewer>
+
+    <a href="https://ar-code.com" target="_blank">
+      <div id="linkbutton">
+        <span id="linktext">
+          <strong>Create Your Own AR Codes – Your Link Here</strong><br />
+          <span id="linkurl">https://google.com</span>
+        </span>
+
+        <span id="gotext">
+          <strong>Visit</strong>
+        </span>
+      </div>
+    </a>
+
+    <script>
+      const viewer = document.querySelector("#viewer");
+      const sound = document.querySelector("#sound");
+
+      // เปิด AR อัตโนมัติ
+      viewer.addEventListener("load", () => {
+        setTimeout(() => {
+          viewer.activateAR();
+        }, 800);
+      });
+
+      // เล่นเสียงตอนเข้า AR
+      viewer.addEventListener("ar-status", (event) => {
+        if (event.detail.status === "session-started") {
+          sound.play();
+        }
+      });
+
+      // เผื่อมือถือบางเครื่องต้องแตะก่อน
+      document.body.addEventListener("click", () => {
+        sound.play().catch(()=>{});
+      });
+    </script>
+
+  </body>
+</html>
