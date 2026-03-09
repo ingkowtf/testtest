@@ -1,79 +1,109 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="th">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<script type="module"
-src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
-</script>
+<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+<title>Green Curry AR</title>
 
 <style>
 
 body{
 margin:0;
+font-family:sans-serif;
+background:#000;
 overflow:hidden;
-background:black;
-font-family:Arial, sans-serif;
 }
 
-/* AR viewer */
+/* 3D Viewer */
+
 model-viewer{
-width:100vw;
+width:100%;
 height:100vh;
+background:#000;
 }
 
-/* bottom info panel */
+/* Hotspot */
 
-#infoPanel{
+.hotspot{
+background:white;
+border-radius:10px;
+padding:6px 10px;
+font-size:14px;
+border:none;
+}
+
+.hotspot-info{
+font-size:12px;
+color:#555;
+}
+
+/* Bottom Sheet */
+
+.info-panel{
 position:fixed;
-bottom:-300px;
+bottom:0;
 left:0;
 width:100%;
+height:60vh;
+
 background:white;
-border-radius:20px 20px 0 0;
+border-radius:25px 25px 0 0;
+
 padding:20px;
-box-shadow:0 -10px 30px rgba(0,0,0,0.25);
-transition:0.35s;
-max-height:65vh;
+
 overflow-y:auto;
+
+box-shadow:0 -10px 30px rgba(0,0,0,0.2);
 }
 
-#infoPanel.open{
-bottom:0;
-}
+/* drag bar */
 
-#handle{
+.drag-bar{
 width:40px;
 height:5px;
 background:#ccc;
 border-radius:10px;
 margin:auto;
-margin-bottom:12px;
-cursor:pointer;
+margin-bottom:15px;
 }
 
-#infoPanel h2{
+/* content */
+
+.info-panel h1{
 margin-top:0;
+font-size:24px;
 }
 
-#infoPanel h3{
-margin-bottom:6px;
-margin-top:16px;
+.info-panel h2{
+margin-top:20px;
+font-size:18px;
 }
 
-#infoPanel ul{
-padding-left:18px;
-margin-top:6px;
+.info-panel p{
+font-size:16px;
+line-height:1.5;
 }
 
-#infoPanel a{
-color:#0a84ff;
-text-decoration:none;
-font-weight:500;
+/* mobile */
+
+@media(max-width:768px){
+
+.info-panel{
+height:65vh;
+padding:18px;
 }
 
-#infoPanel a:hover{
-text-decoration:underline;
+.info-panel h1{
+font-size:22px;
+}
+
+.info-panel p{
+font-size:15px;
+}
+
 }
 
 </style>
@@ -81,119 +111,69 @@ text-decoration:underline;
 
 <body>
 
-<audio id="sound" src="mixkit-arcade-retro-game-over-213.wav"></audio>
+<!-- 3D Model -->
 
 <model-viewer
-src="greencurry.glb"
+src="green_curry.glb"
 ar
-ar-modes="scene-viewer quick-look webxr"
-camera-controls
 auto-rotate
-shadow-intensity="1"
-environment-image="neutral">
+camera-controls
+shadow-intensity="1">
+
+<!-- Hotspot Info -->
+
+<button slot="hotspot-1"
+data-position="0 0.2 0"
+data-normal="0 1 0"
+class="hotspot">
+
+🍛 Green Curry
+
+<div class="hotspot-info">
+Thai coconut curry
+</div>
+
+</button>
+
 </model-viewer>
 
 
-<!-- INFORMATION PANEL -->
+<!-- Bottom Info Panel -->
 
-<div id="infoPanel">
+<div class="info-panel">
 
-<div id="handle"></div>
+<div class="drag-bar"></div>
 
-<h2>แกงเขียวหวาน (Green Curry)</h2>
+<h1>แกงเขียวหวาน (Green Curry)</h1>
 
-<h3>Description</h3>
+<h2>Description</h2>
 <p>
 แกงเขียวหวานเป็นอาหารไทยประเภทแกงกะทิที่มีรสหวาน เผ็ด และหอมจากพริกแกงเขียวหวาน
-สมุนไพรไทย และกะทิ มักใส่เนื้อไก่หรือเนื้อวัว พร้อมมะเขือและใบโหระพา
-นิยมรับประทานคู่กับข้าวหอมมะลิร้อน ๆ
+มักใส่ไก่ มะเขือ และใบโหระพา นิยมรับประทานกับข้าวหอมมะลิ
 </p>
 
-<h3>Origin</h3>
+<h2>Origin</h2>
 <p>
-ภาคกลางของประเทศไทย และเริ่มเป็นที่นิยมในช่วงสมัยรัตนโกสินทร์ตอนต้น
+มีต้นกำเนิดในประเทศไทยตั้งแต่สมัยรัตนโกสินทร์ตอนต้น เป็นหนึ่งในแกงไทยที่ได้รับความนิยมทั่วโลก
 </p>
 
-<h3>Ingredients</h3>
-<ul>
-<li>กะทิ (Coconut milk)</li>
-<li>พริกแกงเขียวหวาน (Green curry paste)</li>
-<li>เนื้อไก่ / เนื้อวัว</li>
-<li>มะเขือเปราะ</li>
-<li>ใบโหระพา</li>
-<li>พริกชี้ฟ้าแดง</li>
-</ul>
-
-<h3>Spice level</h3>
-<p>🌶🌶🌶 (ปานกลางถึงเผ็ด)</p>
-
-<h3>Recommended restaurant</h3>
-<ul>
-
-<li>
-<a href="https://maps.app.goo.gl/PM9UB6ZBPouWwue88" target="_blank">
-ร้านสงวนศรี (Sanguan Sri)
-</a>
-</li>
-
-<li>
-<a href="https://maps.app.goo.gl/YCsVmfso7trjdaXHA" target="_blank">
-ร้านเมธาวลัย ศรแดง (Methavalai Sorndaeng)
-</a>
-</li>
-
-<li>
-<a href="https://maps.app.goo.gl/k768yqPgPr83cGjV6" target="_blank">
-ร้านข้าว (Khao – เอกมัย)
-</a>
-</li>
-
-</ul>
-
-<h3>Recipe link</h3>
+<h2>Ingredients</h2>
 <p>
-<a href="https://hot-thai-kitchen.com/green-curry/" target="_blank">
-ดูสูตรวิธีทำ →
-</a>
+กะทิ พริกแกงเขียวหวาน ไก่ มะเขือ ใบโหระพา พริกชี้ฟ้า น้ำปลา น้ำตาลปี๊บ
 </p>
 
-<h3>Fun fact</h3>
+<h2>Spice Level</h2>
+<p>🌶️🌶️🌶️ Medium</p>
+
+<h2>Recommended Restaurant</h2>
+<p>Blue Elephant Bangkok</p>
+
+<h2>Fun Fact</h2>
 <p>
-สีเขียวของแกงเขียวหวานมาจากพริกสดสีเขียวและสมุนไพรไทย
-ทำให้มีกลิ่นหอมเฉพาะตัว และเป็นหนึ่งในอาหารไทยที่มีชื่อเสียงไปทั่วโลก
+ชื่อ "แกงเขียวหวาน" มาจากสีเขียวของพริกแกง ไม่ได้หมายความว่ามีรสหวานเท่านั้น
 </p>
 
 </div>
-
-
-<script>
-
-const viewer=document.querySelector("model-viewer")
-const sound=document.querySelector("#sound")
-const panel=document.getElementById("infoPanel")
-const handle=document.getElementById("handle")
-
-viewer.addEventListener("load",()=>{
-setTimeout(()=>{
-viewer.activateAR()
-},800)
-})
-
-viewer.addEventListener("ar-status",(event)=>{
-if(event.detail.status==="session-started"){
-sound.play()
-}
-})
-
-document.body.addEventListener("click",()=>{
-sound.play().catch(()=>{})
-})
-
-handle.addEventListener("click",()=>{
-panel.classList.toggle("open")
-})
-
-</script>
 
 </body>
 </html>
