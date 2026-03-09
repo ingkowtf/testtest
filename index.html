@@ -1,50 +1,74 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
 <script type="module"
 src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
 </script>
+
+<title>Green Curry AR</title>
 
 <style>
 
 body{
 margin:0;
 font-family:sans-serif;
-background:#f5f5f5;
+background:#f2f2f2;
 }
 
 /* 3D viewer */
 
 .viewer{
 width:100%;
-height:80vh;
+height:75vh;
 background:black;
 }
 
-/* info box */
+/* model viewer */
 
-.info-panel{
+model-viewer{
+width:100%;
+height:100%;
+}
+
+/* hotspot label */
+
+.hotspot{
 background:white;
-border-radius:25px 25px 0 0;
-padding:25px;
-margin-top:-10px;
+border:none;
+padding:6px 10px;
+border-radius:12px;
+font-size:14px;
+box-shadow:0 3px 10px rgba(0,0,0,.3);
 }
 
-/* text */
+/* info panel */
 
-h1{
-margin-top:0;
+.info{
+background:white;
+margin-top:-20px;
+border-radius:24px 24px 0 0;
+padding:22px;
+padding-bottom:40px;
 }
 
-p{
-line-height:1.6;
+/* drag bar */
+
+.drag{
+width:42px;
+height:5px;
+background:#ccc;
+border-radius:10px;
+margin:8px auto 18px auto;
 }
+
+h1{margin:0;font-size:23px}
+h2{margin-top:18px;font-size:18px}
+p{font-size:15px;line-height:1.6}
 
 </style>
-
 </head>
 
 <body>
@@ -55,35 +79,56 @@ line-height:1.6;
 src="green_curry.glb"
 ios-src="green_curry.usdz"
 ar
+ar-modes="quick-look scene-viewer webxr"
 camera-controls
 auto-rotate
-style="width:100%;height:100%;">
+shadow-intensity="1">
+
+<button
+slot="hotspot-1"
+data-position="0 0.15 0"
+data-normal="0 1 0"
+class="hotspot">
+
+🍛 Green Curry
+
+</button>
+
 </model-viewer>
 
 </div>
 
-<div class="info-panel">
+
+<div class="info">
+
+<div class="drag"></div>
 
 <h1>แกงเขียวหวาน (Green Curry)</h1>
 
 <h2>Description</h2>
-
 <p>
-แกงเขียวหวานเป็นอาหารไทยประเภทแกงกะทิที่มีรสหวาน เผ็ด
-และหอมจากพริกแกงเขียวหวาน
+แกงเขียวหวานเป็นอาหารไทยประเภทแกงกะทิ
+มีรสเผ็ด หอมจากพริกแกงเขียวหวาน
+มักใส่ไก่ มะเขือ และใบโหระพา
 </p>
 
 <h2>Origin</h2>
-
 <p>
 มีต้นกำเนิดในประเทศไทยตั้งแต่สมัยรัตนโกสินทร์ตอนต้น
+และเป็นหนึ่งในแกงไทยที่มีชื่อเสียงทั่วโลก
 </p>
 
 <h2>Ingredients</h2>
-
 <p>
 กะทิ พริกแกงเขียวหวาน ไก่ มะเขือ ใบโหระพา
+พริกชี้ฟ้า น้ำปลา น้ำตาลปี๊บ
 </p>
+
+<h2>Spice Level</h2>
+<p>🌶️🌶️🌶️ Medium</p>
+
+<h2>Recommended Restaurant</h2>
+<p>Blue Elephant Bangkok</p>
 
 </div>
 
