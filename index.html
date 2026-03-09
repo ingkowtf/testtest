@@ -1,136 +1,369 @@
-<!DOCTYPE html>
-<html lang="th">
+<!doctype html>
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 <script type="module"
-src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
+  src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
 </script>
-
-<title>Green Curry AR</title>
 
 <style>
 
-body{
-margin:0;
-font-family:sans-serif;
-background:#f2f2f2;
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
-/* 3D viewer */
-
-.viewer{
-width:100%;
-height:75vh;
-background:black;
+body {
+  margin: 0;
+  overflow: hidden;
+  background: black;
+  font-family: Arial, sans-serif;
 }
 
-/* model viewer */
-
-model-viewer{
-width:100%;
-height:100%;
+/* AR viewer */
+model-viewer {
+  width: 100vw;
+  height: 100vh;
+  /* ดันขึ้นเล็กน้อยเมื่อ panel เปิด (optional) */
 }
 
-/* hotspot label */
-
-.hotspot{
-background:white;
-border:none;
-padding:6px 10px;
-border-radius:12px;
-font-size:14px;
-box-shadow:0 3px 10px rgba(0,0,0,.3);
+/* ปุ่มเปิด info panel — อยู่ด้านล่างเป็น FAB */
+#openBtn {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: none;
+  border-radius: 50px;
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  transition: 0.3s;
+  /* safe area */
+  margin-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* info panel */
-
-.info{
-background:white;
-margin-top:-20px;
-border-radius:24px 24px 0 0;
-padding:22px;
-padding-bottom:40px;
+#openBtn:active {
+  transform: translateX(-50%) scale(0.95);
 }
 
-/* drag bar */
-
-.drag{
-width:42px;
-height:5px;
-background:#ccc;
-border-radius:10px;
-margin:8px auto 18px auto;
+#openBtn.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(20px);
 }
 
-h1{margin:0;font-size:23px}
-h2{margin-top:18px;font-size:18px}
-p{font-size:15px;line-height:1.6}
+/* overlay backdrop */
+#overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 19;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s;
+}
+
+#overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* bottom info panel — เริ่มต้นซ่อนอยู่ด้านล่าง */
+#infoPanel {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  max-height: 85vh;
+  background: white;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -10px 30px rgba(0,0,0,0.25);
+  z-index: 20;
+  overflow: hidden;
+  /* เริ่มต้นซ่อน — เลื่อนลงไปข้างล่างสุด */
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#infoPanel.open {
+  transform: translateY(0);
+}
+
+/* scroll area ภายใน panel */
+#panelContent {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  max-height: 85vh;
+  padding: 0 20px 20px 20px;
+  /* safe area สำหรับ bottom bar ของ iPhone */
+  padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+}
+
+/* handle bar สำหรับปิด */
+#handleBar {
+  position: sticky;
+  top: 0;
+  background: white;
+  padding: 12px 0 4px 0;
+  z-index: 1;
+  cursor: pointer;
+}
+
+#handle {
+  width: 40px;
+  height: 5px;
+  background: #ccc;
+  border-radius: 10px;
+  margin: auto;
+}
+
+#infoPanel h2 {
+  margin-top: 8px;
+  margin-bottom: 4px;
+  font-size: clamp(18px, 5vw, 24px);
+  word-wrap: break-word;
+}
+
+#infoPanel h3 {
+  margin-bottom: 6px;
+  margin-top: 16px;
+  font-size: clamp(14px, 4vw, 18px);
+}
+
+#infoPanel p, #infoPanel li {
+  font-size: clamp(13px, 3.5vw, 16px);
+  line-height: 1.6;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+#infoPanel ul {
+  padding-left: 18px;
+  margin-top: 6px;
+}
+
+#infoPanel a {
+  color: #0a84ff;
+  text-decoration: none;
+  font-weight: 500;
+  word-break: break-all;
+}
+
+#infoPanel a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive — Tablet & Desktop */
+@media (min-width: 600px) {
+  #infoPanel {
+    max-width: 500px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100%);
+    border-radius: 20px 20px 0 0;
+  }
+
+  #infoPanel.open {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  #panelContent {
+    max-height: 70vh;
+  }
+}
+
+/* AR hotspot annotation */
+.hotspot {
+  background: rgba(255,255,255,0.9);
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  pointer-events: none;
+  max-width: 220px;
+  line-height: 1.4;
+}
+
+.hotspot .label {
+  color: #333;
+}
 
 </style>
 </head>
 
 <body>
 
-<div class="viewer">
+<audio id="sound" src="mixkit-arcade-retro-game-over-213.wav"></audio>
 
 <model-viewer
-src="green_curry.glb"
-ios-src="green_curry.usdz"
-ar
-ar-modes="quick-look scene-viewer webxr"
-camera-controls
-auto-rotate
-shadow-intensity="1">
-
-<button
-slot="hotspot-1"
-data-position="0 0.15 0"
-data-normal="0 1 0"
-class="hotspot">
-
-🍛 Green Curry
-
-</button>
-
+  src="greencurry.glb"
+  ar
+  ar-modes="scene-viewer quick-look webxr"
+  camera-controls
+  auto-rotate
+  shadow-intensity="1"
+  environment-image="neutral"
+>
+  <!-- AR Hotspot: ข้อมูลจะแสดงตอนดู AR ด้วย -->
+  <button class="hotspot" slot="hotspot-1"
+    data-position="0 0.15 0"
+    data-normal="0 1 0"
+    data-visibility-attribute="visible">
+    <span class="label">🍜 แกงเขียวหวาน<br>Green Curry<br>🌶🌶🌶</span>
+  </button>
 </model-viewer>
 
+<!-- ปุ่มเปิด info panel -->
+<button id="openBtn" onclick="togglePanel()">ℹ️ ดูข้อมูลเพิ่มเติม</button>
+
+<!-- overlay ด้านหลัง panel -->
+<div id="overlay" onclick="closePanel()"></div>
+
+<!-- INFORMATION PANEL -->
+<div id="infoPanel">
+
+  <div id="panelContent">
+
+    <div id="handleBar" onclick="closePanel()">
+      <div id="handle"></div>
+    </div>
+
+    <h2>🍜 แกงเขียวหวาน (Green Curry)</h2>
+
+    <h3>Description</h3>
+    <p>
+      แกงเขียวหวานเป็นอาหารไทยประเภทแกงกะทิที่มีรสหวาน เผ็ด และหอมจากพริกแกงเขียวหวาน
+      สมุนไพรไทย และกะทิ มักใส่เนื้อไก่หรือเนื้อวัว พร้อมมะเขือและใบโหระพา
+      นิยมรับประทานคู่กับข้าวหอมมะลิ���้อน ๆ
+    </p>
+
+    <h3>Origin</h3>
+    <p>
+      ภาคกลางของประเทศไทย และเริ่มเป็นที่นิยมในช่วงสมัยรัตนโกสินทร์ตอนต้น
+    </p>
+
+    <h3>Ingredients</h3>
+    <ul>
+      <li>กะทิ (Coconut milk)</li>
+      <li>พริกแกงเขียวหวาน (Green curry paste)</li>
+      <li>เนื้อไก่ / เนื้อวัว</li>
+      <li>มะเขือเปราะ</li>
+      <li>ใบโหระพา</li>
+      <li>พริกชี้ฟ้าแดง</li>
+    </ul>
+
+    <h3>Spice level</h3>
+    <p>🌶🌶🌶 (ปานกลางถึงเผ็ด)</p>
+
+    <h3>Recommended restaurant</h3>
+    <ul>
+      <li>
+        <a href="https://maps.app.goo.gl/PM9UB6ZBPouWwue88" target="_blank">
+          ร้านสงวนศรี (Sanguan Sri)
+        </a>
+      </li>
+      <li>
+        <a href="https://maps.app.goo.gl/YCsVmfso7trjdaXHA" target="_blank">
+          ร้านเมธาวลัย ศรแดง (Methavalai Sorndaeng)
+        </a>
+      </li>
+      <li>
+        <a href="https://maps.app.goo.gl/k768yqPgPr83cGjV6" target="_blank">
+          ร้านข้าว (Khao – เอกมัย)
+        </a>
+      </li>
+    </ul>
+
+    <h3>Recipe link</h3>
+    <p>
+      <a href="https://hot-thai-kitchen.com/green-curry/" target="_blank">
+        ดูสูตรวิธีทำ →
+      </a>
+    </p>
+
+    <h3>Fun fact</h3>
+    <p>
+      สีเขียวของแกงเขียวหวานมาจากพริกสดสีเขียวและสมุนไพรไทย
+      ทำให้มีกลิ่นหอมเฉพาะตัว และเป็นหนึ่งในอาหารไทยที่มีชื่อเสียงไปทั่วโลก
+    </p>
+
+  </div>
+
 </div>
 
 
-<div class="info">
+<script>
 
-<div class="drag"></div>
+const viewer = document.querySelector("model-viewer");
+const sound  = document.querySelector("#sound");
+const panel  = document.getElementById("infoPanel");
+const overlay = document.getElementById("overlay");
+const openBtn = document.getElementById("openBtn");
 
-<h1>แกงเขียวหวาน (Green Curry)</h1>
+function togglePanel() {
+  const isOpen = panel.classList.contains("open");
+  if (isOpen) {
+    closePanel();
+  } else {
+    openPanel();
+  }
+}
 
-<h2>Description</h2>
-<p>
-แกงเขียวหวานเป็นอาหารไทยประเภทแกงกะทิ
-มีรสเผ็ด หอมจากพริกแกงเขียวหวาน
-มักใส่ไก่ มะเขือ และใบโหระพา
-</p>
+function openPanel() {
+  panel.classList.add("open");
+  overlay.classList.add("open");
+  openBtn.classList.add("hidden");
+}
 
-<h2>Origin</h2>
-<p>
-มีต้นกำเนิดในประเทศไทยตั้งแต่สมัยรัตนโกสินทร์ตอนต้น
-และเป็นหนึ่งในแกงไทยที่มีชื่อเสียงทั่วโลก
-</p>
+function closePanel() {
+  panel.classList.remove("open");
+  overlay.classList.remove("open");
+  openBtn.classList.remove("hidden");
+}
 
-<h2>Ingredients</h2>
-<p>
-กะทิ พริกแกงเขียวหวาน ไก่ มะเขือ ใบโหระพา
-พริกชี้ฟ้า น้ำปลา น้ำตาลปี๊บ
-</p>
+// touch swipe down to close
+let startY = 0;
+const panelContent = document.getElementById("panelContent");
 
-<h2>Spice Level</h2>
-<p>🌶️🌶️🌶️ Medium</p>
+panelContent.addEventListener("touchstart", (e) => {
+  startY = e.touches[0].clientY;
+}, { passive: true });
 
-<h2>Recommended Restaurant</h2>
-<p>Blue Elephant Bangkok</p>
+panelContent.addEventListener("touchend", (e) => {
+  const diff = e.changedTouches[0].clientY - startY;
+  // ถ้าเลื่อนลง > 80px และ scroll อยู่บนสุด → ปิด panel
+  if (diff > 80 && panelContent.scrollTop <= 0) {
+    closePanel();
+  }
+}, { passive: true });
 
-</div>
+// AR events
+viewer.addEventListener("load", () => {
+  setTimeout(() => {
+    viewer.activateAR();
+  }, 800);
+});
+
+viewer.addEventListener("ar-status", (event) => {
+  if (event.detail.status === "session-started") {
+    sound.play();
+  }
+});
+
+document.body.addEventListener("click", (e) => {
+  // ป้องกันไม่ให้เสียงดังเมื่อกดปุ่มอื่น
+  if (e.target.closest("#openBtn") || e.target.closest("#infoPanel") || e.target.closest("#overlay")) return;
+  sound.play().catch(() => {});
+});
+
+</script>
 
 </body>
 </html>
