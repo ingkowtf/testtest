@@ -46,7 +46,7 @@ model-viewer {
   pointer-events: auto;
 }
 
-/* ปุ่มวงกลม — สไตล์เดียวกันทั้งเสียงและ AR */
+/* ปุ่มวงกลม */
 .circle-btn {
   width: 44px;
   height: 44px;
@@ -122,13 +122,14 @@ model-viewer {
   pointer-events: auto;
 }
 
-/* bottom info panel */
+/* ===== BOTTOM INFO PANEL ===== */
 #infoPanel {
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
-  max-height: 85vh;
+  /* ลด max-height เหลือ 60vh เพื่อไม่ให้ขึ้นไปบังจนเกินไป */
+  max-height: 60vh;
   background: white;
   border-radius: 20px 20px 0 0;
   box-shadow: 0 -10px 30px rgba(0,0,0,0.25);
@@ -136,29 +137,21 @@ model-viewer {
   overflow: hidden;
   transform: translateY(100%);
   transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
 }
 
 #infoPanel.open {
   transform: translateY(0);
 }
 
-/* scroll area ภายใน panel */
-#panelContent {
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  max-height: 85vh;
-  padding: 0 20px 20px 20px;
-  padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
-}
-
-/* handle bar */
+/* handle bar — อยู่ด้านบนสุดเสมอ ไม่ scroll */
 #handleBar {
-  position: sticky;
-  top: 0;
+  flex-shrink: 0;
   background: white;
   padding: 12px 0 4px 0;
-  z-index: 1;
   cursor: pointer;
+  border-radius: 20px 20px 0 0;
 }
 
 #handle {
@@ -167,6 +160,16 @@ model-viewer {
   background: #ccc;
   border-radius: 10px;
   margin: auto;
+}
+
+/* scroll area ภายใน panel — แยกจาก handleBar */
+#panelContent {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 20px 20px 20px;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  overscroll-behavior: contain;
 }
 
 #infoPanel h2 {
@@ -211,7 +214,6 @@ model-viewer {
     max-width: 500px;
     left: 50%;
     transform: translateX(-50%) translateY(100%);
-    border-radius: 20px 20px 0 0;
   }
 
   #infoPanel.open {
@@ -219,26 +221,8 @@ model-viewer {
   }
 
   #panelContent {
-    max-height: 70vh;
+    max-height: 55vh;
   }
-}
-
-/* AR hotspot annotation */
-.hotspot {
-  background: rgba(255,255,255,0.9);
-  border-radius: 12px;
-  padding: 8px 14px;
-  font-size: 13px;
-  font-weight: 600;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-  pointer-events: none;
-  max-width: 220px;
-  line-height: 1.4;
-  border: none;
-}
-
-.hotspot .label {
-  color: #333;
 }
 
 </style>
@@ -248,12 +232,11 @@ model-viewer {
 
 <audio id="sound" src="mixkit-arcade-retro-game-over-213.wav" loop></audio>
 
-<!-- ===== TOP BAR: ปุ่มเสียง + ปุ่ม AR ===== -->
+<!-- ===== TOP BAR ===== -->
 <div id="topBar">
 
-  <!-- ปุ่ม View AR — กดได้ตลอด -->
+  <!-- ปุ่ม View AR -->
   <button class="circle-btn" id="arBtn" title="View in AR" onclick="launchAR()">
-    <!-- AR icon (cube) -->
     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
       <path d="M12 2L3 7v10l9 5 9-5V7l-9-5zm0 2.18L18.39 7.5 12 10.82 5.61 7.5 12 4.18zM5 9.06l6 3.33v6.55l-6-3.33V9.06zm8 9.88v-6.55l6-3.33v6.55l-6 3.33z"/>
     </svg>
@@ -261,11 +244,9 @@ model-viewer {
 
   <!-- ปุ่มเสียง — เริ่มเป็น mute -->
   <button class="circle-btn" id="soundBtn" title="Toggle sound" onclick="toggleSound()">
-    <!-- Mute icon (เริ่มต้น) -->
     <svg id="iconMuted" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
       <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51A8.796 8.796 0 0021 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06a8.99 8.99 0 003.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
     </svg>
-    <!-- Unmuted icon (ซ่อน) -->
     <svg id="iconUnmuted" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="display:none;">
       <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
     </svg>
@@ -282,31 +263,11 @@ model-viewer {
   auto-rotate
   shadow-intensity="1"
   environment-image="neutral"
-  ios-src=""
 >
-
-  <!-- 
-    iOS Quick Look: banner ข้อมูลจะแสดงที่ด้านล่างของ Quick Look 
-    ใช้ custom banner ผ่าน #custom attribute ใน ios-src
-    สำหรับ Quick Look ที่ iOS ควบคุม (Object mode) — ใส่ข้อมูลผ่าน content attribute 
-  -->
-
-  <!-- AR Hotspot -->
-  <button class="hotspot" slot="hotspot-1"
-    data-position="0 0.15 0"
-    data-normal="0 1 0"
-    data-visibility-attribute="visible">
-    <span class="label">แกงเขียวหวาน<br>Green Curry<br>🌶🌶🌶</span>
-  </button>
-
-  <!-- 
-    Quick Look Banner: เพิ่มข้อมูลอาหารใน AR Quick Look ของ iOS 
-    ใช้ slot ar-button ที่ซ่อนอยู่ (model-viewer จะส่ง callToAction ให้ Quick Look)
-  -->
+  <!-- Quick Look Banner สำหรับ iOS -->
   <a id="arLink" slot="ar-button" style="display:none;">
     ดูข้อมูลแกงเขียวหวาน
   </a>
-
 </model-viewer>
 
 <!-- ปุ่มเปิด info panel -->
@@ -318,11 +279,13 @@ model-viewer {
 <!-- INFORMATION PANEL -->
 <div id="infoPanel">
 
-  <div id="panelContent">
+  <!-- handle อยู่นอก scroll area — กดเพื่อปิดเท่านั้น -->
+  <div id="handleBar" onclick="closePanel()">
+    <div id="handle"></div>
+  </div>
 
-    <div id="handleBar" onclick="closePanel()">
-      <div id="handle"></div>
-    </div>
+  <!-- เนื้อหาที่ scroll ได้ — แยกออกจาก handle -->
+  <div id="panelContent">
 
     <h2>🍜 แกงเขียวหวาน (Green Curry)</h2>
 
@@ -378,7 +341,7 @@ model-viewer {
 
     <h3>Fun fact</h3>
     <p>
-      สีเขียวของแกงเขียวหวานมาจากพริกสดสีเขียวและสมุนไพรไทย
+      สีเขียวของแกงเข���ยวหวานมาจากพริกสดสีเขียวและสมุนไพรไทย
       ทำให้มีกลิ่นหอมเฉพาะตัว และเป็นหนึ่งในอาหารไทยที่มีชื่อเสียงไปทั่วโลก
     </p>
 
@@ -445,23 +408,29 @@ function closePanel() {
   openBtn.classList.remove("hidden");
 }
 
-// touch swipe down to close
-let startY = 0;
+// ===== SWIPE DOWN TO CLOSE (แก้ไข: ให้ทำงานเฉพาะเมื่อ scroll อยู่บนสุดจริงๆ) =====
 const panelContent = document.getElementById("panelContent");
+let touchStartY = 0;
+let touchStartScrollTop = 0;
 
 panelContent.addEventListener("touchstart", (e) => {
-  startY = e.touches[0].clientY;
+  touchStartY = e.touches[0].clientY;
+  touchStartScrollTop = panelContent.scrollTop;
 }, { passive: true });
 
 panelContent.addEventListener("touchend", (e) => {
-  const diff = e.changedTouches[0].clientY - startY;
-  if (diff > 80 && panelContent.scrollTop <= 0) {
+  const touchEndY = e.changedTouches[0].clientY;
+  const diff = touchEndY - touchStartY;
+
+  // ปิด panel เฉพาะเมื่อ:
+  // 1. ตอนเริ่ม touch scroll อยู่บนสุด (scrollTop === 0)
+  // 2. เลื่อนลง > 100px (ตั้งใจเลื่อนจริงๆ)
+  if (diff > 100 && touchStartScrollTop <= 0 && panelContent.scrollTop <= 0) {
     closePanel();
   }
 }, { passive: true });
 
 // ===== AR EVENTS =====
-// ไม่ auto-launch AR อีกต่อไป — ให้ user กดเอง
 viewer.addEventListener("ar-status", (event) => {
   if (event.detail.status === "session-started") {
     if (soundOn) {
@@ -470,22 +439,11 @@ viewer.addEventListener("ar-status", (event) => {
   }
 });
 
-// ===== iOS Quick Look: Custom Banner =====
-// เมื่อ model-viewer ใช้ Quick Look บน iOS จะส่ง callToAction
-// เราเพิ่ม banner โดยแนบ URL ไปกับ Quick Look link
-// model-viewer จะใช้ #custom=URL parameter ให้อัตโนมัติ
+// ===== iOS Quick Look Banner =====
 viewer.addEventListener("load", () => {
-  // สร้าง Quick Look custom banner URL
-  // เมื่อผู้ใช้กดปุ่มใน Quick Look (Object mode) จะเปิด URL นี้
-  const bannerURL = window.location.href; // กลับมาหน้าเว็บเดิม
-  
-  // ตั้งค่า iOS Quick Look banner ผ่าน model-viewer
-  // ใส่ข้อมูลใน link attribute
   const arLink = document.getElementById("arLink");
   if (arLink) {
-    // model-viewer จะใช้ slot="ar-button" เป็น call-to-action text สำหรับ Quick Look
-    // และเปิด href เมื่อกด
-    arLink.href = bannerURL;
+    arLink.href = window.location.href;
   }
 });
 
