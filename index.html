@@ -1,176 +1,88 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Green Curry AR</title>
+<script type="module"
+src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
+</script>
 
 <style>
 
 body{
 margin:0;
 font-family:sans-serif;
-background:#000;
-overflow:hidden;
+background:#f5f5f5;
 }
 
-/* 3D Viewer */
+/* 3D viewer */
 
-model-viewer{
+.viewer{
 width:100%;
-height:100vh;
-background:#000;
+height:80vh;
+background:black;
 }
 
-/* Hotspot */
-
-.hotspot{
-background:white;
-border-radius:10px;
-padding:6px 10px;
-font-size:14px;
-border:none;
-}
-
-.hotspot-info{
-font-size:12px;
-color:#555;
-}
-
-/* Bottom Sheet */
+/* info box */
 
 .info-panel{
-position:fixed;
-bottom:0;
-left:0;
-width:100%;
-height:60vh;
-
 background:white;
 border-radius:25px 25px 0 0;
-
-padding:20px;
-
-overflow-y:auto;
-
-box-shadow:0 -10px 30px rgba(0,0,0,0.2);
+padding:25px;
+margin-top:-10px;
 }
 
-/* drag bar */
+/* text */
 
-.drag-bar{
-width:40px;
-height:5px;
-background:#ccc;
-border-radius:10px;
-margin:auto;
-margin-bottom:15px;
-}
-
-/* content */
-
-.info-panel h1{
+h1{
 margin-top:0;
-font-size:24px;
 }
 
-.info-panel h2{
-margin-top:20px;
-font-size:18px;
-}
-
-.info-panel p{
-font-size:16px;
-line-height:1.5;
-}
-
-/* mobile */
-
-@media(max-width:768px){
-
-.info-panel{
-height:65vh;
-padding:18px;
-}
-
-.info-panel h1{
-font-size:22px;
-}
-
-.info-panel p{
-font-size:15px;
-}
-
+p{
+line-height:1.6;
 }
 
 </style>
+
 </head>
 
 <body>
 
-<!-- 3D Model -->
+<div class="viewer">
 
 <model-viewer
 src="green_curry.glb"
+ios-src="green_curry.usdz"
 ar
-auto-rotate
 camera-controls
-shadow-intensity="1">
-
-<!-- Hotspot Info -->
-
-<button slot="hotspot-1"
-data-position="0 0.2 0"
-data-normal="0 1 0"
-class="hotspot">
-
-🍛 Green Curry
-
-<div class="hotspot-info">
-Thai coconut curry
-</div>
-
-</button>
-
+auto-rotate
+style="width:100%;height:100%;">
 </model-viewer>
 
-
-<!-- Bottom Info Panel -->
+</div>
 
 <div class="info-panel">
-
-<div class="drag-bar"></div>
 
 <h1>แกงเขียวหวาน (Green Curry)</h1>
 
 <h2>Description</h2>
+
 <p>
-แกงเขียวหวานเป็นอาหารไทยประเภทแกงกะทิที่มีรสหวาน เผ็ด และหอมจากพริกแกงเขียวหวาน
-มักใส่ไก่ มะเขือ และใบโหระพา นิยมรับประทานกับข้าวหอมมะลิ
+แกงเขียวหวานเป็นอาหารไทยประเภทแกงกะทิที่มีรสหวาน เผ็ด
+และหอมจากพริกแกงเขียวหวาน
 </p>
 
 <h2>Origin</h2>
+
 <p>
-มีต้นกำเนิดในประเทศไทยตั้งแต่สมัยรัตนโกสินทร์ตอนต้น เป็นหนึ่งในแกงไทยที่ได้รับความนิยมทั่วโลก
+มีต้นกำเนิดในประเทศไทยตั้งแต่สมัยรัตนโกสินทร์ตอนต้น
 </p>
 
 <h2>Ingredients</h2>
+
 <p>
-กะทิ พริกแกงเขียวหวาน ไก่ มะเขือ ใบโหระพา พริกชี้ฟ้า น้ำปลา น้ำตาลปี๊บ
-</p>
-
-<h2>Spice Level</h2>
-<p>🌶️🌶️🌶️ Medium</p>
-
-<h2>Recommended Restaurant</h2>
-<p>Blue Elephant Bangkok</p>
-
-<h2>Fun Fact</h2>
-<p>
-ชื่อ "แกงเขียวหวาน" มาจากสีเขียวของพริกแกง ไม่ได้หมายความว่ามีรสหวานเท่านั้น
+กะทิ พริกแกงเขียวหวาน ไก่ มะเขือ ใบโหระพา
 </p>
 
 </div>
